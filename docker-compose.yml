@@ -1,0 +1,132 @@
+version: '3.3'
+services:
+  web-nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - .:/var/www:delegated
+      - ./docker/nginx/site.conf:/etc/nginx/conf.d/default.conf
+    links:
+      - php-8
+  php-8:
+    # user: '${USER_ID}:${GROUP_ID}'
+    restart: unless-stopped
+    image: grafikart/php:php8.1-1
+    volumes:
+      - .:/var/www:delegated
+    depends_on:
+      - db-mysql
+    # environment:
+    #   PHP_IDE_CONFIG: serverName=grafikart
+    #   APP_ENV: dev
+    #   REDIS_URL: redis://redis
+    #   MAILER_DSN: smtp://mail:1025?encryption=null&auth_mode=null
+    #   DATABASE_URL: postgresql://grafikart:grafikart@db:5432/grafikart?serverVersion=12&chartset=utf8
+    #   MERCURE_PUBLISH_URL: http://mercure/.well-known/mercure
+    #   MESSENGER_TRANSPORT_DSN: redis://redis:6379/messages
+    #   MESSENGER_TRANSPORT_FAILED_DSN: redis://redis:6379/messages_failed
+    #   MERCURE_SUBSCRIBER_KEY: mercure_subscriber_mercure_subscriber_mercure_subscriber
+    #   MEILISEARCH_HOST: "meilisearch:7700"
+  # db-postgres:
+  #   restart: unless-stopped
+  #   image: postgres:12-alpine
+  #   ports:
+  #     - 5432:5432 # On expose le port pour pouvoir inspecter la base pendant la phase de développement
+  #   environment:
+  #     POSTGRES_PASSWORD: nour
+  #     POSTGRES_USER: nour
+  #     POSTGRES_DB: dev
+  #     TZ: Europe/Paris
+  #     PGTZ: Europe/Paris
+  #   volumes:
+  #     # - db-data:/var/lib/postgresql/data
+  #     - ./var:/var/www/var
+  db-mysql:
+    restart: unless-stopped
+    image: mysql
+    ports:
+      - 3366:3306 # On expose le port pour pouvoir inspecter la base pendant la phase de développement
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      # MYSQL_ALLOW_EMPTY_PASSWORD: 
+      # MYSQL_RANDOM_ROOT_PASSWORD: 
+      # TZ: Europe/Paris
+      # PGTZ: Europe/Paris
+    volumes:
+      # - db-data:/var/lib/postgresql/data
+      - ./var:/var/www/var
+  # redis:
+  #   restart: unless-stopped
+  #   image: redis:6-alpine
+  # meilisearch:
+  #   restart: unless-stopped
+  #   image: getmeili/meilisearch:v1.0
+  #   environment:
+  #     MEILI_ENV: development
+  #     MEILI_MASTER_KEY:
+  #   ports:
+  #     - 7700:7700
+  #   volumes:
+  #     - search-data:/meili_data
+  # mercure:
+  #   restart: unless-stopped
+  #   image: dunglas/mercure:v0.10.4
+  #   environment:
+  #     CORS_ALLOWED_ORIGINS: 'http://grafikart.localhost:8000'
+  #     JWT_KEY: mercure_subscriber
+  #     PUBLISHER_JWT_KEY: mercure_publisher
+  #     ALLOW_ANONYMOUS: 0
+  #   ports:
+  #     - 8001:80
+  # messenger:
+  #   user: '${USER_ID}:${GROUP_ID}'
+  #   image: grafikart/php:php8.1-1
+  #   volumes:
+  #     - .:/var/www:delegated
+  #   depends_on:
+  #     - db
+  #   restart: unless-stopped
+  #   command: ['php', 'bin/console', 'messenger:consume', 'async', '--limit=10', '-vv']
+  #   environment:
+  #     MESSENGER_TRANSPORT_DSN: redis://redis:6379/messages
+  #     MESSENGER_TRANSPORT_FAILED_DSN: redis://redis:6379/messages_failed
+  # Dev tools
+  adminer:
+    image: adminer
+    environment:
+      APP_ENV: dev
+      ADMINER_DESIGN: pepa-linha
+      ADMINER_DEFAULT_SERVER: db-mysql
+    ports:
+      - 8888:8080
+  # mail:
+  #   image: mailhog/mailhog
+  #   ports:
+  #     - 1080:8025
+  # redis-gui:
+  #   image: rediscommander/redis-commander
+  #   environment:
+  #     - REDIS_HOSTS=local:redis:6379
+  #   ports:
+  #     - "8081:8081"
+  node:
+    # user: '${USER_ID}:${GROUP_ID}'
+    # build:
+    #   context: ./tools/docker/node
+    image: "node"
+    command: pnpm run dev
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 3000:3000
+# volumes:
+#   db-data:
+#     driver: local
+#   search-data:
+#     driver: local
+
+# networks:
+#   dev:
