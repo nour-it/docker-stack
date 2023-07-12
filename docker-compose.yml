@@ -1,5 +1,15 @@
 version: '3'
 services:
+
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+
+      
   php:
     build: php/7.4
     volumes:
@@ -7,3 +17,5 @@ services:
       - ./php/php.ini:/usr/local/etc/php/php.ini
     ports:
       - 80:80
+    links:
+      - "db"
