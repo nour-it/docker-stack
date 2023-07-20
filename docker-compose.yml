@@ -1,40 +1,43 @@
 version: '3'
 services:
 
+  apache:
+    build: web/apache
+    ports:
+      - "80:8000" 
+    volumes:
+      - ./www:/usr/local/apache2/htdocs
+
   nginx:
-    image: nginx:latest    
+    build: web/nginx
     ports:
       - "80:80" 
     volumes:
       - ./web/nginx:/etc/nginx/conf.d   
       - ./www:/var/www
-    restart: always
     links:
       - "php"
-      
+
   php:
-    build: app/php/8.1
+    build: app/php/7.4
     volumes:
       - ./www:/var/www
       - ./app/php/php.ini:/usr/local/etc/php/php.ini
-    ports:
-      - 9000:9000
+    links:
+      - "mysql"
+      - "postgresql"
 
-  #   links:
-  #     - "mysql"
-  #     - "postgresql"
-
-  # node:
-  #   build: app/nodejs/20
-  #   volumes:
-  #     - ./www:/app   
+  node:
+    build: app/nodejs/20
+    volumes:
+      - ./www:/app   
    
-  # mysql:
-  #   build: database/mysql
-  #   volumes:
-  #     - ./var/mysql:/var/lib/mysql
+  mysql:
+    build: database/mysql
+    volumes:
+      - ./var/mysql:/var/lib/mysql
 
-  # postgresql:
-  #   build: database/postgresql
-  #   volumes:
-  #     - ./var:/var/lib/postgresql/data
+  postgresql:
+    build: database/postgresql
+    volumes:
+      - ./var:/var/lib/postgresql/data

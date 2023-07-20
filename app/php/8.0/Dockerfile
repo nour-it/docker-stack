@@ -10,14 +10,12 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-install pdo_mysql bcmath
 
 RUN apt-get update && apt-get install -y \
-    libpq-dev 
+    libpq-dev \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
 RUN docker-php-ext-install pgsql pdo_pgsql
 
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# ENTRYPOINT ["docker-php-entrypoint"]
-WORKDIR /var/www/html
-STOPSIGNAL SIGQUIT
-EXPOSE 9000
+WORKDIR /var/www
 CMD ["php-fpm"]
