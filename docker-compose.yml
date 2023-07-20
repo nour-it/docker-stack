@@ -1,21 +1,38 @@
-version: '3'
+version: '1'
 services:
 
+  # mysql:
+  #   image: mysql
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   # restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #   volumes:
+  #     - ./var:/var/lib/mysql
 
   db:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
+    ports:
+      - 3366:3366
     environment:
       MYSQL_ROOT_PASSWORD: root
-
-      
-  php:
-    build: php/7.4
     volumes:
-      - ./www:/var/www/html
-      - ./php/php.ini:/usr/local/etc/php/php.ini
-    ports:
-      - 80:80
-    links:
-      - "db"
+      - ./var:/var/lib/mysql
+
+
+  # postgres:
+  #   build: database/postgresql
+  #   volumes:
+  #     - ./var:/var/lib/postgresql/data
+      
+  # php:
+  #   build: app/php/8.0
+  #   volumes:
+  #     - ./www:/var/www/html
+  #     - ./app/php/php.ini:/usr/local/etc/php/php.ini
+  #   ports:
+  #     - 80:80
+  #   links:
+  #     - "mysql"
