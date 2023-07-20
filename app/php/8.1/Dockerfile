@@ -6,13 +6,15 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     unzip \
-    # php-8.1-postgresql \
-    # libpq-dev \
     && docker-php-ext-install zip
 RUN docker-php-ext-install pdo_mysql bcmath
-# RUN docker-php-ext-install pgsql pdo_pgsql
 
+RUN apt-get update && apt-get install -y \
+    libpq-dev 
+RUN docker-php-ext-install pgsql pdo_pgsql
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-WORKDIR /var/www/html
-CMD ["php", "-S", "0.0.0.0:80"]
+
+WORKDIR /var/www
+CMD ["php-fpm"]
+

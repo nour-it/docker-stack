@@ -1,38 +1,40 @@
-version: '1'
+version: '3'
 services:
 
-  # mysql:
-  #   image: mysql
-  #   command: --default-authentication-plugin=mysql_native_password
-  #   # restart: always
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #   volumes:
-  #     - ./var:/var/lib/mysql
-
-  db:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
+  nginx:
+    image: nginx:latest    
     ports:
-      - 3366:3366
-    environment:
-      MYSQL_ROOT_PASSWORD: root
+      - "80:80" 
     volumes:
-      - ./var:/var/lib/mysql
+      - ./web/nginx:/etc/nginx/conf.d   
+      - ./www:/var/www
+    restart: always
+    links:
+      - "php"
+      
+  php:
+    build: app/php/8.1
+    volumes:
+      - ./www:/var/www
+      - ./app/php/php.ini:/usr/local/etc/php/php.ini
+    ports:
+      - 9000:9000
 
+  #   links:
+  #     - "mysql"
+  #     - "postgresql"
 
-  # postgres:
+  # node:
+  #   build: app/nodejs/20
+  #   volumes:
+  #     - ./www:/app   
+   
+  # mysql:
+  #   build: database/mysql
+  #   volumes:
+  #     - ./var/mysql:/var/lib/mysql
+
+  # postgresql:
   #   build: database/postgresql
   #   volumes:
   #     - ./var:/var/lib/postgresql/data
-      
-  # php:
-  #   build: app/php/8.0
-  #   volumes:
-  #     - ./www:/var/www/html
-  #     - ./app/php/php.ini:/usr/local/etc/php/php.ini
-  #   ports:
-  #     - 80:80
-  #   links:
-  #     - "mysql"
