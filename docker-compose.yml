@@ -4,14 +4,16 @@ services:
   apache:
     build: web/apache
     ports:
-      - "80:8000" 
+      - "8000:80" 
     volumes:
       - ./www:/usr/local/apache2/htdocs
+    links:
+      - "php"
 
   nginx:
     build: web/nginx
     ports:
-      - "80:80" 
+      - "80:80"  
     volumes:
       - ./web/nginx:/etc/nginx/conf.d   
       - ./www:/var/www
@@ -34,10 +36,22 @@ services:
    
   mysql:
     build: database/mysql
+    ports:
+      - 3306:3306
     volumes:
       - ./var/mysql:/var/lib/mysql
 
   postgresql:
     build: database/postgresql
+    ports:
+      - 5432:5432
     volumes:
       - ./var:/var/lib/postgresql/data
+
+  # fail2ban:
+  #   image: lscr.io/linuxserver/fail2ban:latest
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /var/config/fail2ban:/config
+  #     - /var/log/fail2ban:/var/log:ro
+  #     - /var/fail2ban:/remotelogs
