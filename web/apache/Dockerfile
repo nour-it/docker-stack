@@ -23,7 +23,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN a2enmod rewrite ssl
 RUN service apache2 restart
 
-RUN mkdir /var/cert 
+
 
 # RUN openssl req -newkey rsa:2048 -nodes -keyout /etc/apache2/cert/key.pem -out /etc/apache2/cert/crt.pem
-# CMD [ "apachectl", "search", "php" ]

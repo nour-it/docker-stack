@@ -2,3 +2,4 @@ var/
 var2/
 *.zip
 .env
+.gitignore
