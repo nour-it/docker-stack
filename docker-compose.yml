@@ -12,8 +12,8 @@ services:
   #     - "${PHP_CONF}:/usr/local/etc/php/php.ini"
   #     - "${APACHE_CONF}:/etc/apache2/sites-available/000-default.conf"
   #     - "${PROJECT_DIR}:/var/www"
-  #   # links:
-    #   - "php" $@gb@d02023
+  #   links:
+  #     - "php"
 
   nginx:
     build: web/nginx
@@ -35,7 +35,7 @@ services:
       - "${PROJECT_DIR}:/var/www"
     links:
       - "mysql"
-      # - "postgresql"
+      - "postgresql"
 
   # node:
   #   build: app/nodejs/20
@@ -53,10 +53,16 @@ services:
     volumes:
       - "${DB_DIR}:/var/lib/mysql"
 
-  # postgresql:
-  #   build: database/postgresql
-  #   # restart: unless-stopped
-  #   ports:
-  #     - 5432:5432
-  #   volumes:
-  #     - "${DB_DIR}:/var/lib/postgresql/data"
+  postgresql:
+    build: database/postgresql
+    # restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - "${DB_DIR}:/var/lib/postgresql/data"
+
+  adminer:
+    image: adminer
+    # restart: always
+    ports:
+      - "${ADMINER_PORT}:8080"
