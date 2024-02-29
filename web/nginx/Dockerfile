@@ -1,7 +1,9 @@
 FROM nginx:latest 
 # RUN apt-get update 
 
-RUN mkdir /etc/nginx/cert
+RUN mkdir -p -m 777 /etc/nginx/cert/
+
+COPY cert/* /etc/nginx/cert/
 
 # RUN openssl req -newkey rsa:2048 -nodes -keyout /var/cert/key.pem -out /var/cert/csr.pem
 # CMD ["apt-get", "search", "fail2ban"] 

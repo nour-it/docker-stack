@@ -1,68 +1,93 @@
-version: '3'
-
+version: "3"
 services:
-
+  # nginx:
+  #   build: web/nginx
+  #   ports:
+  #     - "${NGINX_PORT}:80"
+  #     - "${NGINX_SSL_PORT}:443"
+  #   volumes:
+  #     - "${NGINX_CONF}:/etc/nginx/conf.d/default.conf"
+  #     - "${PROJECT_DIR}:/var/www"
+  #   links:
+  #     - "php"
   # apache:
   #   build: web/apache
-  #   # restart: unless-stopped
   #   ports:
   #     - "${APACHE_PORT}:80"
-  #     - "${APACHE_SSL_PORT}:443"  
+  #     - "${APACHE_SSL_PORT}:443"
   #   volumes:
   #     - "${PHP_CONF}:/usr/local/etc/php/php.ini"
   #     - "${APACHE_CONF}:/etc/apache2/sites-available/000-default.conf"
   #     - "${PROJECT_DIR}:/var/www"
   #   links:
-  #     - "php"
+  #     - "mysql"
+  #     - "postgresql"
 
-  nginx:
-    build: web/nginx
-    # restart: unless-stopped
-    ports:
-      - "${NGINX_PORT}:80"
-      - "${NGINX_SSL_PORT}:443"  
-    volumes:
-      - "${NGINX_CONF}:/etc/nginx/conf.d/default.conf"
-      - "${PROJECT_DIR}:/var/www"
-    links:
-      - "php"
-      
-  php:
-    build: app/php/8.1
-    # restart: unless-stopped
-    volumes:
-      - "${PHP_CONF}:/usr/local/etc/php/php.ini"
-      - "${PROJECT_DIR}:/var/www"
-    links:
-      - "mysql"
-      - "postgresql"
+  # php:
+  #   build: app/php
+  #   command: php artisan serve --host=0.0.0.0
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - "${PHP_CONF}:/usr/local/etc/php/php.ini"
+  #     - "${PROJECT_DIR}:/var/www"
+  #   links:
+  #     - "mysql"
+  #     - "postgresql"
+
+  # adminer:
+  #   image: adminer
+  #   ports:
+  #     - "${ADMINER_PORT}:8080"
+
+  # composer:
+  #   image: composer:latest
+  #   command: composer create-project laravel/laravel portfolio-laravel
+  #   volumes:
+  #     - "${PROJECT_DIR}/../:/app"
 
   # node:
   #   build: app/nodejs/20
   #   ports:
-  #     - "${NODE_PORT}:${NODE_PORT}"  
+  #     - "${NODE_PORT}:${NODE_PORT}"
   #   restart: unless-stopped
   #   volumes:
-  #     - "${NODE_APP_DIR}:/app"   
-   
-  mysql:
-    build: database/mysql
-    # restart: unless-stopped
-    ports:
-      - 3306:3306
-    volumes:
-      - "${DB_DIR}:/var/lib/mysql"
+  #     - "${NODE_APP_DIR}:/app"
 
-  postgresql:
-    build: database/postgresql
-    # restart: unless-stopped
-    ports:
-      - 5432:5432
-    volumes:
-      - "${DB_DIR}:/var/lib/postgresql/data"
+  # mysql:
+  #   build: database/mysql
+  #   ports:
+  #     - 3306:3306
+  #   volumes:
+  #     - "${DB_DIR}:/var/lib/mysql"
+  # postgresql:
+  #   build: database/postgresql
+  #   ports:
+  #     - 5432:5432
+  #   volumes:
+  #     - "${DB_DIR}:/var/lib/postgresql/data"
 
-  adminer:
-    image: adminer
-    # restart: always
+  # maildev:
+  #   image: maildev/maildev
+  #   ports:
+  #     - 1080:1080
+  #     - 1025:1025
+
+  # redis:
+  #   build: cache/redis
+  #   ports:
+  #     - 6379:6379
+  #   volumes:
+  #     - "${CACHE_DIR}:/data"
+
+  search:
+    build: search/elasticsearch
+    # ulimits:
+    #   memlock:
+    #     soft: -1
+    #     hard: -1
     ports:
-      - "${ADMINER_PORT}:8080"
+      - 9200:9200
+      - 9300:9300
+    # volumes:
+    #   - "${SEARCH_DIR}:/usr/share/elasticsearch/data"
