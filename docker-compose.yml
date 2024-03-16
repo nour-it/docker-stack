@@ -1,93 +1,72 @@
 version: "3"
 services:
-  # nginx:
-  #   build: web/nginx
-  #   ports:
-  #     - "${NGINX_PORT}:80"
-  #     - "${NGINX_SSL_PORT}:443"
-  #   volumes:
-  #     - "${NGINX_CONF}:/etc/nginx/conf.d/default.conf"
-  #     - "${PROJECT_DIR}:/var/www"
-  #   links:
-  #     - "php"
-  # apache:
-  #   build: web/apache
-  #   ports:
-  #     - "${APACHE_PORT}:80"
-  #     - "${APACHE_SSL_PORT}:443"
-  #   volumes:
-  #     - "${PHP_CONF}:/usr/local/etc/php/php.ini"
-  #     - "${APACHE_CONF}:/etc/apache2/sites-available/000-default.conf"
-  #     - "${PROJECT_DIR}:/var/www"
-  #   links:
-  #     - "mysql"
-  #     - "postgresql"
+  # WEB
+  web_server:
+    build: web/nginx
+    ports:
+      - "${NGINX_PORT}:80"
+      - "${NGINX_SSL_PORT}:443"
+    volumes:
+      - "${NGINX_CONF}:/etc/nginx/conf.d/default.conf"
+      - "${APACHE_CONF}:/etc/apache2/sites-available/000-default.conf"
+      - "${PHP_CONF}:/usr/local/etc/php/php.ini"
+      - "${PROJECT_DIR}:/var/www"
+    links:
+      - "app_exe"
+      - "db_server"
 
-  # php:
-  #   build: app/php
-  #   command: php artisan serve --host=0.0.0.0
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - "${PHP_CONF}:/usr/local/etc/php/php.ini"
-  #     - "${PROJECT_DIR}:/var/www"
-  #   links:
-  #     - "mysql"
-  #     - "postgresql"
+  # APP
+  app_exe:
+    build: app/php
+    command: php-fpm
+    ports:
+      - "8000:8000"
+    volumes:
+      - "${PHP_CONF}:/usr/local/etc/php/php.ini"
+      - "${PROJECT_DIR}:/var/www"
+      - "${NODE_APP_DIR}:/app"
+    links:
+      - "db_server"
 
+  # DATABASE
+  db_server:
+    build: database/postgresql
+    ports:
+      - "3306:3306"
+      - "5432:5432"
+    volumes:
+      - "${DB_DIR}/mysql:/var/lib/mysql"
+      - "${DB_DIR}/postgresql:/var/lib/postgresql/data"
+
+  # CACHE
+  cache_server:
+    build: cache/redis
+    ports:
+      - 6379:6379
+    volumes:
+      - "${CACHE_DIR}/redis:/data"
+
+  # SEARCH ENGINE
+  search:
+    build: search/typesense
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+      - "8108:8108"
+    volumes:
+      - "${SEARCH_DIR}/elasticsearch:/usr/share/elasticsearch/data"
+      - "${SEARCH_DIR}/typesense:/data"
+    command: "--data-dir /data --api-key=${API_KEY} --enable-cors"
+
+  # MAIL
+  mail:
+    build: mail/maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
+# # UTILS
   # adminer:
   #   image: adminer
   #   ports:
   #     - "${ADMINER_PORT}:8080"
-
-  # composer:
-  #   image: composer:latest
-  #   command: composer create-project laravel/laravel portfolio-laravel
-  #   volumes:
-  #     - "${PROJECT_DIR}/../:/app"
-
-  # node:
-  #   build: app/nodejs/20
-  #   ports:
-  #     - "${NODE_PORT}:${NODE_PORT}"
-  #   restart: unless-stopped
-  #   volumes:
-  #     - "${NODE_APP_DIR}:/app"
-
-  # mysql:
-  #   build: database/mysql
-  #   ports:
-  #     - 3306:3306
-  #   volumes:
-  #     - "${DB_DIR}:/var/lib/mysql"
-  # postgresql:
-  #   build: database/postgresql
-  #   ports:
-  #     - 5432:5432
-  #   volumes:
-  #     - "${DB_DIR}:/var/lib/postgresql/data"
-
-  # maildev:
-  #   image: maildev/maildev
-  #   ports:
-  #     - 1080:1080
-  #     - 1025:1025
-
-  # redis:
-  #   build: cache/redis
-  #   ports:
-  #     - 6379:6379
-  #   volumes:
-  #     - "${CACHE_DIR}:/data"
-
-  search:
-    build: search/elasticsearch
-    # ulimits:
-    #   memlock:
-    #     soft: -1
-    #     hard: -1
-    ports:
-      - 9200:9200
-      - 9300:9300
-    # volumes:
-    #   - "${SEARCH_DIR}:/usr/share/elasticsearch/data"

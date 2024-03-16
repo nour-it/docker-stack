@@ -3,5 +3,5 @@ var2/
 *.zip
 .env
 .gitignore
-*node_modules
+*node_modules/
 *cert
