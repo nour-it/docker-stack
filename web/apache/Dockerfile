@@ -24,8 +24,5 @@ RUN docker-php-ext-configure intl \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN mkdir -p -m 777 /etc/apache/cert/
-COPY cert/*  /etc/apache/cert/
-
 RUN a2enmod rewrite ssl
 RUN service apache2 restart

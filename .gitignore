@@ -5,3 +5,4 @@ var2/
 .gitignore
 *node_modules/
 *cert
+.vscode
