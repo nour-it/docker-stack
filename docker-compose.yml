@@ -1,7 +1,7 @@
-version: "3"
+# version: "3"
 services:
 
-  # WEB
+  # WEB ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   nginx:
     build: web/nginx
     restart: "${RESTART}"
@@ -19,11 +19,11 @@ services:
       - "mysql"
       - "postgresql"
 
-  # APP
+  # APP ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   php:
     build: app/php
     restart: "${RESTART}"
-    command: php artisan serve --host=0.0.0.0 --port=8000 
+    command: php-fpm
     ports:
       - "${PHP_PORT}:8000"
     volumes:
@@ -41,11 +41,11 @@ services:
       - "${NODEJS_PORT}:${NODEJS_PORT}"
     volumes:
       - "${PROJECT_DIR}:/app"
-    links:
-      - "mysql"
-      - "postgresql"
+    # links:
+    #   - "mysql"
+    #   - "postgresql"
 
-  # DATABASE
+  # DATABASE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   mysql:
     build: database/mysql
     restart: "${RESTART}"
@@ -62,7 +62,7 @@ services:
     volumes:
       - "${DB_DIR}/postgresql:/var/lib/postgresql/data"
 
-  # CACHE
+  # CACHE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   redis:
     build: cache/redis
     restart: "${RESTART}"
@@ -71,7 +71,7 @@ services:
     volumes:
       - "${CACHE_DIR}/redis:/data"
 
-  # SEARCH ENGINE
+  # SEARCH ENGINE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   typesense:
     build: search/typesense
     restart: "${RESTART}"
@@ -84,7 +84,7 @@ services:
       - "${SEARCH_DIR}/elasticsearch:/usr/share/elasticsearch/data"
       - "${SEARCH_DIR}/typesense:/data"
 
-  # MAIL
+  # MAIL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   mail:
     build: mail/maildev
     restart: "${RESTART}"
@@ -92,7 +92,7 @@ services:
       - "${MAIL_PORT}:1080"
       - "1025:1025"
 
-  # UTILS
+  # UTILS ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   adminer:
     image: adminer
     restart: "${RESTART}"
@@ -102,4 +102,9 @@ services:
       - "${PHP_CONF}:/etc/php/7.4/cli/php.ini"
       - "${PHP_CONF}:/etc/php/7.4/fpm/php.ini"
       - "${PHP_CONF}:/usr/local/etc/php/conf.d/php.ini"
-      
+
+  # AI
+  # ollama:
+  #   image: ollama/ollama
+  #   volumes:
+  #     - "./AI:/var/AI"

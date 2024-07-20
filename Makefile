@@ -15,6 +15,7 @@ clean:
 	sudo docker rm $(CONTAINERS)
 
 destroy:
-	sudo docker stop $(CONTAINERS) || \
+	pksudo docker stop $(CONTAINERS) || \
 	sudo docker rm $(CONTAINERS) || \
 	sudo docker rmi $(IMAGES)
+	
